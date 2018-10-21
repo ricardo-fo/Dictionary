@@ -5,6 +5,8 @@ def linha():
 	print('-' * 50)
 
 def translator(word):
+	if(' ' in word):
+		word = word.replace(' ', '-')
 	URL = "https://en.oxforddictionaries.com/definition/" + word
 	page = requests.get(URL, timeout = 5)
 	soup = BeautifulSoup(page.content, 'html5lib')
