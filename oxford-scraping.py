@@ -1,5 +1,11 @@
-import requests
+"""
+This is a simples web scrape. It's search for words you type. The code get the HTML from 
+Oxford Dictionaries -> https://en.oxforddictionaries.com
+Author: Ricardo Oliveira
+"""
+
 from bs4 import BeautifulSoup
+import requests
 
 def linha():
 	print('-' * 50)
@@ -7,32 +13,39 @@ def linha():
 def translator(word):
 	if(' ' in word):
 		word = word.replace(' ', '-')
+
+	#Download HTML files
 	URL = "https://en.oxforddictionaries.com/definition/" + word
 	page = requests.get(URL, timeout = 5)
 	soup = BeautifulSoup(page.content, 'html5lib')
-	table = soup.find('div', attrs = {'class':'entryWrapper'})
-	print("\nResultados para " + word + ':')
-	cont = 0
-	for row in table.find_all('section', attrs = {'class':'gramb'}):
-		cont = cont + 1
-		linha()
-		print(row.h3.text.upper() + ':')
-		print(str(cont) + '.', row.find('span', attrs = {'class':'ind'}).text + '\n')
+	page.close()
 
-		#print(row.find('ol', attrs = {'class':'subSenses'}))
-		if(row.find('ol', attrs = {'class':'subSenses'}) != None):
-			cont2 = 0
-			for line in row.find_all('li', attrs = {'class':'subSense'}):
-				cont2 = cont2 + 1
-				if(line.find('span', attrs = {'class':'ind'}) == None):
-					break
-				print(str(cont) + '.' + str(cont2),line.find('span', attrs = {'class':'ind'}).text)
-		"""	
-		if(row.find('ul', attrs = {'class':'semb'}) != None):
-			for line in row.find_all('li'):
-				print(line.find('p').text)
-				print(line.find('div', attrs = {'class':'crossReference'}).text)		
-		"""
+	if(page.status_code != 200):
+		print("Problemas ao abrir o site!\n")
+		return False
+
+	#Parent tag
+	general = soup.find(class_ = "entryWrapper")
+
+	#Taking all informations
+	infos = general.find_all('section', attrs = {'class':'gramb'})
+
+	#Word's classes
+	classes = [cl.h3.get_text() for cl in infos]
+
+	#Taking the meanings
+	i = 0
+	for row in general.select('.gramb'):
+		relation_tags = {}
+		meanings = [mg.get_text() for mg in row.select('.ind')]
+		relation_tags[classes[i]] = meanings
+		print('\n', classes[i].upper())
+		for j in relation_tags[classes[i]]:
+			print(j)
+		i = i + 1
+		if i == len(classes):
+			break
+
 linha()
 linha()
 print("\nEncontre o significado de palavras inglesas.\n")
