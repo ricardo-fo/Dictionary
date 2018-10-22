@@ -11,21 +11,20 @@ import requests
 
 #=====================================================================
 def mainLoop():
-	print('-' * 50)
-	print('-' * 50)
+	print('-' * 70)
+	print('-' * 70)
 	print("\nEncontre o significado de palavras inglesas.\n")
 	print("Fazendo scraping de https://en.oxforddictionaries.com :)\nDigite 'sair' para sair.\n")
 	exp = 'a'
 	while True:
-		print('-' * 50)
-		print('-' * 50)
+		print('-' * 70)
+		print('-' * 70)
 		exp = input("\nDigite uma palavra em inglês: ")
 		if exp == 'sair':
 			print("\nBye :)")
 			break
 		URL = ErrorTest(exp) 
 		if URL != None:
-			print('\n')
 			translator(URL)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,10 +59,15 @@ def translator(site):
 	all_infos = general.find_all('section', attrs = {'class':'gramb'})
 
 	for row in all_infos:
-		info = row.find_all('span', attrs = {'class':["pos", "ind", "iteration", "subsenseIteration"]})
+		info = row.find_all('span', attrs = {'class':["pos", "ind"]})
 		divs = [d.get_text() for d in info]
 		for i in divs:
-			print(i)
+			if i == divs[0]:
+				print('*' * 70)
+				print(i.upper())
+			else:
+				print(i, '\n')
+	print('\n')
 
 #=====================================================================
 
