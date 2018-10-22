@@ -55,20 +55,26 @@ def translator(site):
 	#Parent tag
 	general = soup.find(class_ = "entryWrapper")
 
+	check = general.find_all(class_ = "no-exact-matches")
+	if len(check) != 0:
+		print("Termo não encontrado!\n")
+		return 1
+
 	#Taking all informations
 	all_infos = general.find_all('section', attrs = {'class':'gramb'})
 
 	for row in all_infos:
-		info = row.find_all('span', attrs = {'class':["pos", "ind"]})
+		info = row.find_all(class_ = ["pos", "ind", "crossReference"])
 		divs = [d.get_text() for d in info]
+		del divs[1]
 		for i in divs:
+			if '' == i:
+				continue
 			if i == divs[0]:
 				print('*' * 70)
 				print(i.upper())
 			else:
 				print(i, '\n')
-	print('\n')
 
 #=====================================================================
-
 mainLoop()
